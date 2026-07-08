@@ -1,15 +1,18 @@
 package Practice;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Random;
 class Student{
     private String name;
-    private List<Integer> grades = new ArrayList<>();
+    private Map<String, Integer> grades = new LinkedHashMap<>();
 
-    public void addGrade(int i){
-        this.grades.add(i);
+    public void addGrade(String subject,int i){
+        this.grades.put(subject, i);
     }
 
     public Student(String name){
@@ -22,7 +25,7 @@ class Student{
 
     public double getAverage(){
         double s = 0;
-        for (Integer i : grades) {
+        for (Integer i : grades.values()) {
             s += i;
         }
         return (s/grades.size());
@@ -35,17 +38,42 @@ class Student{
         else return "F";
     }
 
+    public String highestSubject(){
+        Optional<Map.Entry<String, Integer>> maxSubject = grades.entrySet().stream().max(Comparator.comparingDouble(Map.Entry::getValue));
+        if(maxSubject.isPresent()){
+            Map.Entry<String, Integer> entry = maxSubject.get();
+            return entry.getKey() + "( " + entry.getValue() + " )";
+        }
+        else return "No grades available";
+    
+    }
+
+    public String lowestSubject(){
+        Optional<Map.Entry<String, Integer>> minSubject = grades.entrySet().stream().min(Comparator.comparingDouble(Map.Entry::getValue));
+        if(minSubject.isPresent()){
+            Map.Entry<String, Integer> entry = minSubject.get();
+            return entry.getKey() + "( " + entry.getValue() + " )";
+        }
+        else return "No grades available";
+    
+    }
+
     public void printReport(){
-        System.out.println("Name : " + this.name + "\n" + 
-            "Grades : " + this.grades.toString() + "\n" + 
+        System.out.println("Name : " + this.name);
+        System.out.println("Grades:");
+        for(Map.Entry<String, Integer> entry : grades.entrySet()){
+            System.out.println("   " + entry.getKey() + ": " + entry.getValue());
+        }
+        System.out.println( 
             "Avarage : " + this.getAverage() + "\n" + 
-            "Letter : " + this.getLetterGrade(getAverage()) 
-        );
+            "Letter : " + this.getLetterGrade(getAverage()));
     }
 }
 
 public class practice2 {
     public static void main(String[] args) {
+        List<String> subjects = new ArrayList<>(List.of("Math", "Physics", "English", "Biology", "Chemistry"));
+
         Random random = new Random();
         List<Student> students = new ArrayList<>(
             List.of(
@@ -56,9 +84,11 @@ public class practice2 {
             );
         for (Student student : students) {
             for(int i = 0; i < 5; i++){
-                student.addGrade(random.nextInt(50, 101));
+                student.addGrade(subjects.get(i), random.nextInt(50, 101));
             }
             student.printReport();
+            System.out.println("Highest subject: " + student.highestSubject());
+            System.out.println("Lowest subject: " + student.lowestSubject());
             System.out.println();
         }
 
@@ -70,6 +100,5 @@ public class practice2 {
             maxStudent.get().printReport();
         }
        
-
     }
 }
