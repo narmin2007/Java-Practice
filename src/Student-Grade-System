@@ -1,0 +1,75 @@
+package Practice;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+class Student{
+    private String name;
+    private List<Integer> grades = new ArrayList<>();
+
+    public void addGrade(int i){
+        this.grades.add(i);
+    }
+
+    public Student(String name){
+        this.name = name;
+    }
+
+    public String getName(){
+        return this.name;
+    }
+
+    public double getAverage(){
+        double s = 0;
+        for (Integer i : grades) {
+            s += i;
+        }
+        return (s/grades.size());
+    }
+
+    public String getLetterGrade(double Avarage){
+        if(Avarage >= 90) return "A";
+        else if(Avarage >= 80) return "B";
+        else if(Avarage >= 70) return "C";
+        else return "F";
+    }
+
+    public void printReport(){
+        System.out.println("Name : " + this.name + "\n" + 
+            "Grades : " + this.grades.toString() + "\n" + 
+            "Avarage : " + this.getAverage() + "\n" + 
+            "Letter : " + this.getLetterGrade(getAverage()) 
+        );
+    }
+}
+
+public class practice2 {
+    public static void main(String[] args) {
+        Random random = new Random();
+        List<Student> students = new ArrayList<>(
+            List.of(
+                new Student("Nermin"),
+                new Student("Gulnaz"), 
+                new Student("Sehane")
+                )
+            );
+        for (Student student : students) {
+            for(int i = 0; i < 5; i++){
+                student.addGrade(random.nextInt(50, 101));
+            }
+            student.printReport();
+            System.out.println();
+        }
+
+
+        Optional<Student> maxStudent = students.stream().max(Comparator.comparingDouble(Student::getAverage));
+
+        if(maxStudent.isPresent()){
+             System.out.println("Student with highest avarage: ");
+            maxStudent.get().printReport();
+        }
+       
+
+    }
+}
