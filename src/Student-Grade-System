@@ -1,6 +1,7 @@
 package Practice;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.InputMismatchException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,36 +71,101 @@ class Student{
     }
 }
 
+class GraduateStudent extends Student{
+    private String thesisTitle;
+
+    public GraduateStudent(String name, String thesisTitle){
+        super(name);
+        this.thesisTitle = thesisTitle;
+    }
+
+    @Override
+    public String getLetterGrade(double Avarage) {
+        if(Avarage >= 70) return "Pass";
+        else return "Fail";
+    }
+
+    @Override
+    public void printReport(){
+        super.printReport();
+        System.out.println("Thesis: " + thesisTitle);
+    }
+
+}
+
+
 public class practice2 {
     public static void main(String[] args) {
         
         Scanner scanner = new Scanner(System.in);
 
         List<String> subjects = new ArrayList<>(List.of("Math", "Physics", "English", "Biology", "Chemistry"));
-        List<Student> students = new ArrayList<>();
+        List<Student> students = new ArrayList<>();        
+        
+        int studentNumber = 0;
 
-        System.out.print("Input numbers of students: ");
-        int studentNumber = scanner.nextInt();
-        scanner.nextLine();
+        boolean lamp = false;
+        while(!lamp){
+            System.out.print("Input numbers of students: ");
+            try{
+                int number = scanner.nextInt();
+                if(number >= 0)
+                {
+                    studentNumber = number;
+                    lamp = true;
+                }
+                else{
+                    System.out.println("Number must be bigger than 0");
+                }
+                scanner.nextLine();
+            }
+            catch(InputMismatchException e){
+                scanner.nextLine();
+                System.out.println("Please input number!");
+            }
+        }
 
         for(int i = 0; i <studentNumber; i++){
             System.out.print("Input " + (i+1) + "." + "student's name: ");
-            students.add(new Student(scanner.nextLine()));
+            String name = scanner.nextLine();
+
+            System.out.println("Is this a graduate student? (yes/no)");
+            String answer = scanner.nextLine();
+
+            if(answer.equals("yes") || answer.equals("Yes") || answer.equals("YES")){
+                System.out.println("Thesis title : ");
+                String title = scanner.nextLine();
+                students.add(new GraduateStudent(name, title));
+            }
+            else
+            students.add(new Student(name));
         }
 
 
         for (Student student : students) {
             for(int i = 0; i < subjects.size(); i++){
-                System.out.println(student.getName() + "'s " + subjects.get(i) + " grade: ");
-                int grade = scanner.nextInt();
-                student.addGrade(subjects.get(i), grade);
+                boolean l = false;
+                while (!l) {
+                    System.out.println(student.getName() + "'s " + subjects.get(i) + " grade: ");
+                    try {
+                        int grade = scanner.nextInt();
+                        if (grade >= 0 && grade <= 100) {
+                            student.addGrade(subjects.get(i), grade);
+                            l = true;
+                        } else {
+                            System.out.println("Grade must be between 0 and 100!");
+                        }
+                    } catch (InputMismatchException e) {
+                        scanner.nextLine();
+                        System.out.println("Please enter a number!");
+                    }
+                }
             }
             student.printReport();
             System.out.println("Highest subject: " + student.highestSubject());
             System.out.println("Lowest subject: " + student.lowestSubject());
             System.out.println();
         }
-
 
         Optional<Student> maxStudent = students.stream().max(Comparator.comparingDouble(Student::getAverage));
 
